@@ -101,6 +101,6 @@ gta_sa_modloader_controller.exe
 # Mods readme files. Realmente estos si son utiles, solo que por ahora no los almaceno.
 *(Leiame - PT).txt
 *(Readme - EN).txt
-*.txt
+modloader/**/*.txt
 
 
