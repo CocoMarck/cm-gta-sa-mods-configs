@@ -1,0 +1,11 @@
+# Default - auto detect text files
+* text=auto
+
+# Shell scripts - always LF (Linux needs this)
+*.sh text eol=lf
+
+# Mod configs - always CRLF (GTA SA mods expect Windows format)
+*.ini text eol=crlf
+
+# Markdown - LF
+*.md text eol=lf
