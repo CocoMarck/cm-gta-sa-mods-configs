@@ -1,0 +1,106 @@
+# Windows metadata
+desktop.ini
+
+# Models textures, and cols
+*.DFF
+*.TXD
+*.dff
+*.txd
+*.zon
+*.col
+*.ide
+*.ipl
+*.IPL
+
+# Anims
+*.ifp
+
+# Game work files
+*.exe
+*.dll
+*.pdb
+*.gxt
+*.cfg
+*.dat
+*.img
+*.fxp
+*.fxc
+stream.ini
+
+# Fonts
+*.fxt
+*.ttf
+
+# Game work dirs
+audio/
+movies/
+userfiles/
+models/
+data/
+
+# Logs and temps files
+*.tmp
+*.log
+*.temp
+*crash-info.txt
+*CrashList.txt
+
+# Crazy links
+*.url
+
+# Standard multimedia
+*.mp3
+*.mp4
+*.ogg
+*.avi
+*.3gp
+*.wav
+*.WAV
+*.png
+*.jpg
+*.ico
+*.svg
+
+# Compress files
+*.7zip
+*.rar
+*.7z
+
+# Mods work dirs
+bin/
+resources/
+_internal/
+ReadMe/
+(ESSENTIALS README)/
+(fix dependencies)/
+views/
+.data/
+logs/
+CHANGELOG.md
+
+# Mods scripts
+*.asi
+*.cs
+*.lua
+
+# Mods work files
+*.cleo
+*.json
+*.bin
+*.psh
+*.vsh
+*.dds
+*.qa
+*.sav
+*.DJJR
+*.h
+*.bak
+gta_sa_modloader_controller
+gta_sa_modloader_controller.exe
+
+# Mods readme files. Realmente estos si son utiles, solo que por ahora no los almaceno.
+*(Leiame - PT).txt
+*(Readme - EN).txt
+*.txt
+
+
