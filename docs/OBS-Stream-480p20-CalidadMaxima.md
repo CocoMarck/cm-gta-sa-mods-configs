@@ -4,6 +4,22 @@ Para obtener la **máxima calidad visual absoluta en 480p a 20 fps** reduciendo 
 
 Al transmitir a 480p con 20 fps, el procesador trabaja tan holgado que puedes exigirle a la compresión `x264` que haga su mejor trabajo sin ahogar a tu Ryzen 5. Esta configuración es **compatible con cualquier servicio de streaming** (Kick, Twitch, YouTube, etc.).
 
+> **Configuración de referencia verificada.** La config de producción sin tirones en este equipo es [`OBS-Stream-Kick.md`](./OBS-Stream-Kick.md) (720p @ 20 fps, x264 `superfast`, `threads=0 rc-lookahead=10`, tune `(Ninguno)`). Este documento es la variante 480p20 de calidad máxima. Ojo: **nunca uses `zerolatency`** — rompe el búfer y produce tirones en el reproductor.
+
+## ⚠️ REGLA PERMANENTE: escalar SOLO en la pestaña Video
+
+**Aplica esto siempre, en cualquier configuración de OBS de este equipo:**
+
+| Dónde | Ajuste | Valor |
+|---|---|---|
+| **Pestaña Salida** (Output > Emisión) | **Cambiar escala / Escalar la salida (Rescale Output)** | **DESACTIVADO — siempre, nunca lo marques** |
+| **Pestaña Video** (Settings > Video) | **Lienzo (Base) → Salida (Scaled)** | **Escalar AQUÍ** (ej. `1920x1080` → `854x480`) + filtro de escalado |
+
+**Por qué:** si marcas la casilla en la pestaña Salida, OBS **vuelve a escalar el vídeo una segunda vez por CPU**, además del escalado de la pestaña Video. Son **procesos duplicados**: compiten con el juego por la CPU, retrasan los fotogramas y producen tirones.
+
+> El escalado ocurre **una sola vez**, en la pestaña Video. La pestaña Salida solo se encarga de codificar y enviar.
+
+
 ## 1. Video (Settings > Video)
 
 | Opción | Valor | Explicación |
@@ -22,24 +38,27 @@ Al transmitir a 480p con 20 fps, el procesador trabaja tan holgado que puedes ex
 | **Intervalo de keyframes (Keyframe Interval)** | `2 s` | Estándar de transmisión. |
 | **Preset de CPU (CPU Usage Preset)** | **`slow`** (o **`medium`** si tu CPU está más justo) | Como 480p20 requiere poquísimos píxeles por segundo, puedes usar `slow`. Aplica los algoritmos de búsqueda visual más profundos para eliminar parpadeos y macrobloques. |
 | **Perfil (Profile)** | `high` | Fuerza la matriz de cuantización más detallada. |
-| **Sintonizar (Tune)** | `film` | Optimiza la retención de detalle fino y gradientes de color. |
-| **Encoder** | `x264 (Software)` | Óptimo para este enfoque. |
+| **Sintonizar (Tune)** | **`(Ninguno)`** | No uses `film` ni `zerolatency` con el resto de esta tabla. `film` alarga el búfer de análisis y `zerolatency` lo rompe: ambos causan tirones aquí. Si aun así quieres un extra de detalle fino, baja el bitrate en vez de tocar el tune. |
+| **Escalar la salida (Rescale Output)** | **DESMARCADO** | El escalado se hace una sola vez en la pestaña Video. Marcado aquí duplica el trabajo en CPU. |
+| **Encoder** | `x264 (Software)` | Óptimo para este enfoque. La RX 6400 no tiene codificador H.264 dedicado. |
 
 ## 3. Opciones de x264 personalizadas (Advanced)
 
 Copia y pega exactamente la siguiente cadena en el campo **x264 Options**:
 
 ```text
-aq-mode=2 aq-strength=1.3 subme=9 me=umh
+threads=0 rc-lookahead=10 aq-mode=2 aq-strength=1.3 subme=9 me=umh
 ```
 
+* **`threads=0`:** x264 detecta solo los 6 hilos reales del Ryzen 5 3500X (sin SMT). No fuerces un número manual de hilos.
+* **`rc-lookahead=10`:** Acota el búfer de análisis a 10 fotogramas. Sin esto, los tunes pesados de x264 acumulan fotogramas y el stream se corta.
 * **`aq-mode=2` y `aq-strength=1.3`:** Le da prioridad de bits a los textos pequeños, líneas finas e interfaces para que no se vuelvan borrosas en movimiento.
 * **`subme=9`:** Activa subpixel motion estimation muy preciso, mejorando nitidez en detalles finos.
 * **`me=umh` (Uneven Multi-Hexagon):** Método avanzado de estimación de movimiento por píxel. Proporciona la mejor calidad posible con un coste de CPU mínimo para esta baja resolución.
 
 ## 4. Recomendaciones
 
-- **Captura correcta según tu sistema.** En **Linux/Wayland**, usa **Window Capture** (captura de ventana) o **PipeWire Screen Capture / Desktop Capture** según lo que funcione mejor para tu entorno. En Windows puedes priorizar Game Capture. Nunca uses Display Capture de forma innecesaria (consume más CPU).
+- **Captura correcta según tu sistema.** En **Linux/Wayland (KDE Plasma 6.3.6 sobre KWin)**, usa **PipeWire Window/Screen Capture** o **`obs-vkcapture`**; son los únicos que evitan la desincronización de fotogramas en la composición de KWin. En Windows puedes priorizar Game Capture. Nunca uses Display Capture de forma innecesaria (consume más CPU).
 - **Desactiva Preview mientras stremeas.** El preview consume CPU extra innecesario.
 - **Escena lo más limpia posible.** Quita overlays, GIFs, fuentes animadas, transiciones o filtros pesados innecesarios para maximizar el ancho de banda disponible para la imagen.
 - **Sin grabación local.** No actives `Record` ni `Replay Buffer` a menos que sea estrictamente necesario.

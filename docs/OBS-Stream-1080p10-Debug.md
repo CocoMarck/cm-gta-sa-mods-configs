@@ -4,6 +4,22 @@ Para transmitir a **1080p a 10 fps** sin que se rompa la imagen en movimientos r
 
 Configuración optimizada para modo debug en **1080p / 10 fps**. Esta configuración es **compatible con cualquier servicio de streaming** (Kick, Twitch, YouTube, etc.).
 
+> **⚠️ NO usar `zerolatency` en este equipo.** En el hardware actual (Debian 13 / KDE Plasma 6.3.6 Wayland / Ryzen 5 3500X / RX 6400 sin VCN H.264) el tune `zerolatency` **rompe el búfer de codificación y genera tirones en el reproductor**. Usa siempre `(Ninguno)`.
+>
+> La referencia de configuración ya verificada sin tirones está en [`OBS-Stream-Kick.md`](./OBS-Stream-Kick.md) (720p @ 20 fps, x264 `superfast`, `threads=0 rc-lookahead=10`). Este documento es la variante 1080p10.
+
+## ⚠️ REGLA PERMANENTE: escalar SOLO en la pestaña Video
+
+**Aplica esto siempre, en cualquier configuración de OBS de este equipo:**
+
+| Dónde | Ajuste | Valor |
+|---|---|---|
+| **Pestaña Salida** (Output > Emisión) | **Cambiar escala / Escalar la salida (Rescale Output)** | **DESACTIVADO — siempre, nunca lo marques** |
+| **Pestaña Video** (Settings > Video) | **Lienzo (Base) → Salida (Scaled)** | **Escalar AQUÍ** + filtro de escalado |
+
+**Por qué:** si marcas la casilla en la pestaña Salida, OBS **vuelve a escalar el vídeo una segunda vez por CPU**, además del escalado de la pestaña Video. Son **procesos duplicados**: compiten con el juego por la CPU, retrasan los fotogramas y producen tirones.
+
+
 ## 1. Video (Settings > Video)
 
 | Opción | Valor | Explicación |
@@ -22,7 +38,8 @@ Configuración optimizada para modo debug en **1080p / 10 fps**. Esta configurac
 | **Intervalo de keyframes (Keyframe Interval)** | `2 s` | Fuerza un fotograma completo cada 20 fotogramas (2 segundos a 10 fps). |
 | **Preset de CPU (CPU Usage Preset)** | **`veryfast`** o **`faster`** | Mantiene el consumo de CPU bajísimo. |
 | **Perfil (Profile)** | `high` | Indispensable para compresión 1080p. |
-| **Sintonizar (Tune)** | `zerolatency` | **Clave para modo debug:** elimina el búfer de fotogramas, reduciendo la latencia de codificación al mínimo absoluto. |
+| **Sintonizar (Tune)** | **`(Ninguno)`** | **No usar `zerolatency`:** es la causa raíz de los tirones en este equipo. Rompe el búfer de codificación y el reproductor se corta. |
+| **Escalar la salida (Rescale Output)** | **DESMARCADO** | El escalado se hace una sola vez en la pestaña Video. Marcado aquí duplica el trabajo en CPU. |
 | **Encoder** | `x264 (Software)` | Recomendado para este enfoque. |
 
 ## 3. Opciones de x264 personalizadas (Advanced)
@@ -30,9 +47,11 @@ Configuración optimizada para modo debug en **1080p / 10 fps**. Esta configurac
 Copia y pega este comando en la casilla **x264 Options**:
 
 ```text
-keyint=20 min-keyint=10 no-scenecut=1 aq-mode=2 aq-strength=1.1
+threads=0 rc-lookahead=10 keyint=20 min-keyint=10 no-scenecut=1 aq-mode=2 aq-strength=1.1
 ```
 
+* **`threads=0`:** x264 detecta solo los 6 hilos reales del Ryzen 5 3500X (sin SMT). No fuerces un número manual de hilos.
+* **`rc-lookahead=10`:** Acota el búfer de análisis a 10 fotogramas. Evita romper el búfer de codificación.
 * **`keyint=20`:** Como transmites a 10 fps, esto le indica al codificador que haga un Keyframe estricto cada 20 fotogramas (2 segundos). Evita que los cambios bruscos deformen el video por falta de imágenes clave.
 * **`min-keyint=10`:** Permite cierta flexibilidad mínima sin romper la estructura forzada.
 * **`no-scenecut=1`:** Evita que el codificador inserte keyframes extraños en saltos de pantalla rápidos, manteniendo estable el uso de CPU y de red.
@@ -41,7 +60,7 @@ keyint=20 min-keyint=10 no-scenecut=1 aq-mode=2 aq-strength=1.1
 
 ## 4. Recomendaciones
 
-- **Captura correcta según tu sistema.** En **Linux/Wayland**, usa **Window Capture** (captura de ventana) o **PipeWire Screen Capture / Desktop Capture** según lo que funcione mejor para tu entorno. En Windows puedes priorizar Game Capture. Nunca uses Display Capture de forma innecesaria (consume más CPU).
+- **Captura correcta según tu sistema.** En **Linux/Wayland (KDE Plasma 6.3.6 sobre KWin)**, usa **PipeWire Window/Screen Capture** o **`obs-vkcapture`**; son los únicos que evitan la desincronización de fotogramas en la composición de KWin. En Windows puedes priorizar Game Capture. Nunca uses Display Capture de forma innecesaria (consume más CPU).
 - **Desactiva Preview mientras stremeas.** El preview consume CPU extra innecesario.
 - **Sin grabación local.** No actives `Record` ni `Replay Buffer` a menos que sea estrictamente necesario.
 
