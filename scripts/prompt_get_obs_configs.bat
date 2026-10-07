@@ -10,13 +10,15 @@ rem  Dependencias (ya vienen con Windows 10, NO instala nada):
 rem    - powershell.exe  info del hardware y conversion de velocidad
 rem    - curl.exe        medicion de red (incluido desde Windows 10 1803)
 rem  Si falta alguna, se usa "No se" en lugar de abortar.
+rem
+rem  Flags al estilo Windows (tambien acepta -flag / --flag):
+rem    /u /d /r /f /n /c /s /a /o /?      (ver :usage)
 rem =====================================================================
 
 set "SCRIPT_DIR=%~dp0"
 set "PROMPT_TEMPLATE=%SCRIPT_DIR%prompt_template_get_obs_configs_windows.md"
 
 rem ------------------------ valores por defecto ------------------------
-set "powershell_output="
 set "internet_upload="
 set "internet_download="
 set "internet_receptor=Ethernet"
@@ -34,17 +36,21 @@ set "HAVE_CURL=0"
 rem ------------------------ argumentos ------------------------
 :parse_args
 if "%~1"=="" goto :args_done
-if "%~1"=="-u" (set "internet_upload=%~2" & shift & shift & goto :parse_args)
-if "%~1"=="-d" (set "internet_download=%~2" & shift & shift & goto :parse_args)
-if "%~1"=="-r" (set "internet_receptor=%~2" & shift & shift & goto :parse_args)
-if "%~1"=="-f" (set "resolution=%~2" & shift & shift & goto :parse_args)
-if "%~1"=="-n" (set "fps=%~2" & shift & shift & goto :parse_args)
-if "%~1"=="-c" (set "multimedia_servicies=%~2" & shift & shift & goto :parse_args)
-if "%~1"=="-s" (set "stream_type=%~2" & shift & shift & goto :parse_args)
-if "%~1"=="-a" (set "audio_indications=%~2" & shift & shift & goto :parse_args)
-if "%~1"=="-o" (set "output=%~2" & shift & shift & goto :parse_args)
-if "%~1"=="-h" goto :show_help
-if "%~1"=="--help" goto :show_help
+set "arg=%~1"
+if "!arg:~0,2!"=="--" set "arg=/%arg:~2%"
+if "!arg:~0,1!"=="-"  set "arg=/%arg:~1%"
+if /i "!arg!"=="/u"    (set "internet_upload=%~2" & shift & shift & goto :parse_args)
+if /i "!arg!"=="/d"    (set "internet_download=%~2" & shift & shift & goto :parse_args)
+if /i "!arg!"=="/r"    (set "internet_receptor=%~2" & shift & shift & goto :parse_args)
+if /i "!arg!"=="/f"    (set "resolution=%~2" & shift & shift & goto :parse_args)
+if /i "!arg!"=="/n"    (set "fps=%~2" & shift & shift & goto :parse_args)
+if /i "!arg!"=="/c"    (set "multimedia_servicies=%~2" & shift & shift & goto :parse_args)
+if /i "!arg!"=="/s"    (set "stream_type=%~2" & shift & shift & goto :parse_args)
+if /i "!arg!"=="/a"    (set "audio_indications=%~2" & shift & shift & goto :parse_args)
+if /i "!arg!"=="/o"    (set "output=%~2" & shift & shift & goto :parse_args)
+if /i "!arg!"=="/?"    goto :show_help
+if /i "!arg!"=="/h"    goto :show_help
+if /i "!arg!"=="/help" goto :show_help
 echo Opcion desconocida: %~1 1>&2
 call :usage 1>&2
 exit /b 1
@@ -90,7 +96,7 @@ if not defined internet_upload if defined MEASURED_UL set "internet_upload=!MEAS
 goto :speed_done
 
 :no_net
-echo Aviso: no pude medir la red. Usa -u y -d, o quedara "No se". 1>&2
+echo Aviso: no pude medir la red. Usa /u y /d, o quedara "No se". 1>&2
 
 :speed_done
 if not defined internet_download set "internet_download=No se"
@@ -105,25 +111,44 @@ if not exist "%PROMPT_TEMPLATE%" (
     exit /b 1
 )
 
-rem ------------------------ render ------------------------
+rem --------------------------------------------------------------------
+rem  Render:
+rem  Se recorre el template con findstr /n para no perder las lineas
+rem  vacias. Los tokens %var% se reemplazan con valores de variables.
+rem  Para buscar el token literal "%var%" sin que cmd lo expanda, se usa
+rem  una variable auxiliar T_x cuyo valor es exactamente "%var%"
+rem  (por eso se escribe con %%var%% al asignarla).
+rem --------------------------------------------------------------------
+
+set "T_internet_upload=%%internet_upload%%"
+set "T_internet_download=%%internet_download%%"
+set "T_internet_receptor=%%internet_receptor%%"
+set "T_resolution=%%resolution%%"
+set "T_fps=%%fps%%"
+set "T_multimedia_servicies=%%multimedia_servicies%%"
+set "T_stream_type=%%stream_type%%"
+set "T_audio_indications=%%audio_indications%%"
+set "T_powershell_output=%%powershell_output%%"
+
 if exist "%output%" del /q "%output%" >nul 2>&1
 
 for /f "usebackq delims=" %%L in (`findstr /n "^" "%PROMPT_TEMPLATE%"`) do (
     set "line=%%L"
     set "line=!line:*:=!"
-    if "!line!"=="$powershell_output" (
+    if "!line!"=="%T_powershell_output%" (
         if defined HWFILE type "%HWFILE%" >> "%output%"
     ) else (
-        set "line=!line:$powershell_output=!"
-        set "line=!line:$internet_upload=%internet_upload%!"
-        set "line=!line:$internet_download=%internet_download%!"
-        set "line=!line:$internet_receptor=%internet_receptor%!"
-        set "line=!line:$audio_indications=%audio_indications%!"
-        set "line=!line:$multimedia_servicies=%multimedia_servicies%!"
-        set "line=!line:$stream_type=%stream_type%!"
-        set "line=!line:$resolution=%resolution%!"
-        set "line=!line:$fps=%fps%!"
-        echo.!line!>>"%output%"
+        if defined line (
+            set "line=!line:%T_internet_upload%=%internet_upload%!"
+            set "line=!line:%T_internet_download%=%internet_download%!"
+            set "line=!line:%T_internet_receptor%=%internet_receptor%!"
+            set "line=!line:%T_audio_indications%=%audio_indications%!"
+            set "line=!line:%T_multimedia_servicies%=%multimedia_servicies%!"
+            set "line=!line:%T_stream_type%=%stream_type%!"
+            set "line=!line:%T_resolution%=%resolution%!"
+            set "line=!line:%T_fps%=%fps%!"
+        )
+        echo(!line!>>"%output%"
     )
 )
 
@@ -149,19 +174,21 @@ rem ------------------------ ayuda ------------------------
 echo.
 echo Uso: prompt_get_obs_configs.bat [opciones]
 echo.
-echo     -u MB       Subida en Mbps          (default: mide con curl)
-echo     -d MB       Bajada en Mbps          (default: mide con curl)
-echo     -r TEXTO    Medio de conexion       (default: Ethernet)
-echo     -f TEXTO    Resolucion de salida    (default: 720p)
-echo     -n NUM      FPS                     (default: 20)
-echo     -c TEXTO    Plataformas/contenido   (default: PeerTube)
-echo     -s TEXTO    Tipo de stream          (default: Unilateral)
-echo     -a TEXTO    Indicaciones para audio
-echo     -o ARCHIVO  Escribe el archivo      (default: generated_get_obs_configs_prompt.md)
-echo     -h          Esta ayuda
+echo     /u VALOR    Subida en Mbps        (default: mide con curl)
+echo     /d VALOR    Bajada en Mbps        (default: mide con curl)
+echo     /r TEXTO    Medio de conexion     (default: Ethernet)
+echo     /f TEXTO    Resolucion de salida  (default: 720p)
+echo     /n NUM      FPS                   (default: 20)
+echo     /c TEXTO    Plataformas/contenido (default: PeerTube)
+echo     /s TEXTO    Tipo de stream        (default: Unilateral)
+echo     /a TEXTO    Indicaciones para audio
+echo     /o ARCHIVO  Escribe el archivo    (default: generated_get_obs_configs_prompt.md)
+echo(    /?          Esta ayuda
+echo.
+echo Tambien acepta -flag o --flag como alias (ej. -u, --help).
 echo.
 echo Ejemplos:
 echo     prompt_get_obs_configs.bat
-echo     prompt_get_obs_configs.bat -u 90 -d 90 -r "Wifi" -s Multistream -c "PeerTube, Kick" -f "1080p" -n "20" -a "Stream musical"
+echo     prompt_get_obs_configs.bat /u 90 /d 90 /r "Wifi" /s Multistream /c "PeerTube, Kick" /f "1080p" /n "20" -a "Stream musical"
 echo.
 exit /b 0

@@ -3,11 +3,11 @@
 Hola, necesito recomendaciones de configuración para **OBS Studio** basadas en este hardware y OS:
 
 ### Internet
-- Subida: `$internet_upload Mbps`
-- Bajada: `$internet_download Mbps`
+- Subida: `%internet_upload% Mbps`
+- Bajada: `%internet_download% Mbps`
 
 ### HW Info
-- Receptor de internet: $internet_receptor
+- Receptor de internet: %internet_receptor%
 
 PowerShell command:
 ```powershell
@@ -31,7 +31,7 @@ Write-Output"Display: $($gpu.CurrentHorizontalResolution)x$($gpu.CurrentVertical
 
 PowerShell Output:
 ```
-$powershell_output
+%powershell_output%
 ```
 
 ### Por favor ayúdame a configurar OBS
@@ -40,13 +40,13 @@ $powershell_output
 - Recomendación para configuraciones de video local.
 
 #### Objetivo del video/stream
-- Resolución de salida: `$resolution`
-- FPS: `$fps FPS`
-- Audio: $audio_indications
-- Contenido para: $multimedia_servicies
+- Resolución de salida: `%resolution%`
+- FPS: `%fps% FPS`
+- Audio: %audio_indications%
+- Contenido para: %multimedia_servicies%
 
 #### Configuraciones
-- Tipo de stream: $stream_type.
+- Tipo de stream: %stream_type%.
 
 **Para Streaming**
 1. Configuración para imagen estable, y sin que se trabe el streaming. Punto intermedio entre configuraciones dos y tres.
