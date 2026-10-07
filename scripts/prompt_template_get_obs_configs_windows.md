@@ -3,31 +3,35 @@
 Hola, necesito recomendaciones de configuración para **OBS Studio** basadas en este hardware y OS:
 
 ### Internet
-- Subida: `88.35 Mbps`
-- Bajada: `89.28 Mbps`
+- Subida: `$internet_upload Mbps`
+- Bajada: `$internet_download Mbps`
 
 ### HW Info
-- Receptor de internet: Ethernet
+- Receptor de internet: $internet_receptor
 
-Fastfetch command:
-```bash
-fastfetch -s os:kernel:de:wm:cpu:gpu:memory:disk:display --logo none
+PowerShell command:
+```powershell
+$os = Get-CimInstance Win32_OperatingSystem
+$cpu = Get-CimInstance Win32_Processor
+$gpu = Get-CimInstance Win32_VideoController
+$ram = [math]::Round((Get-CimInstance Win32_ComputerSystem).TotalPhysicalMemory / 1GB, 1)
+
+Write-Output"OS: $($os.Caption) $($os.Version)"
+Write-Output"CPU: $($cpu.Name)"
+Write-Output"GPU: $($gpu.Name -join ', ')"
+Write-Output"Memory: $ram GB"
+Write-Output"Disks:"
+Get-CimInstance Win32_LogicalDisk -Filter "DriveType=3" | ForEach-Object {
+    $size = [math]::Round($_.Size / 1GB, 1)
+    $free = [math]::Round($_.FreeSpace / 1GB, 1)
+    Write-Output"  $($_.DeviceID) $size GB (Free: $free GB)"
+}
+Write-Output"Display: $($gpu.CurrentHorizontalResolution)x$($gpu.CurrentVerticalResolution)"
 ```
 
-Fastfetch Output:
+PowerShell Output:
 ```
-OS: Debian GNU/Linux 13 (trixie) x86_64
-Kernel: Linux 6.12.101+deb13-amd64
-DE: KDE Plasma 6.3.6
-WM: KWin (Wayland)
-CPU: AMD Ryzen 5 3500X (6) @ 4.12 GHz
-GPU: AMD Radeon RX 6400 [Discrete]
-Memory: 9.87 GiB / 15.55 GiB (63%)
-Disk (/): 210.32 GiB / 271.53 GiB (77%) - ext4
-Disk (/media/public/500gb-games-ext4): 261.49 GiB / 445.68 GiB (59%) - ext4
-Disk (/media/public/500gb-games-ntfs): 262.04 GiB / 500.00 GiB (52%) - ntfs3
-Disk (/media/public/SSD-256): 186.15 GiB / 238.46 GiB (78%) - exfat
-Display (MSI MP223): 1920x1080 @ 100 Hz in 21" [External]
+$powershell_output
 ```
 
 ### Por favor ayúdame a configurar OBS
@@ -36,13 +40,13 @@ Display (MSI MP223): 1920x1080 @ 100 Hz in 21" [External]
 - Recomendación para configuraciones de video local.
 
 #### Objetivo del video/stream
-- Resolución de salida: `1080p`
-- FPS: `20 FPS`
-- Audio: Sin especificar. Por defecto esta bien.
-- Contenido para: PeerTube, TikTok, Facebook, BiliBili, Kick
+- Resolución de salida: `$resolution`
+- FPS: `$fps FPS`
+- Audio: $audio_indications
+- Contenido para: $multimedia_servicies
 
 #### Configuraciones
-- Tipo de stream: Unilateral.
+- Tipo de stream: $stream_type.
 
 **Para Streaming**
 1. Configuración para imagen estable, y sin que se trabe el streaming. Punto intermedio entre configuraciones dos y tres.
