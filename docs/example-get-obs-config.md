@@ -3,8 +3,8 @@
 Hola, necesito recomendaciones de configuración para **OBS Studio** basadas en este hardware y OS:
 
 ### Internet
-- Subida: `89.76 Mbps`
-- Bajada: `90.04 Mbps`
+- Subida: `89.74 Mbps`
+- Bajada: `90.55 Mbps`
 
 ### HW Info
 - Receptor de internet: Ethernet
@@ -22,10 +22,10 @@ DE: KDE Plasma 6.3.6
 WM: KWin (Wayland)
 CPU: AMD Ryzen 5 3500X (6) @ 4.12 GHz
 GPU: AMD Radeon RX 6400 [Discrete]
-Memory: 9.43 GiB / 15.55 GiB (61%)
-Disk (/): 210.31 GiB / 271.53 GiB (77%) - ext4
+Memory: 6.08 GiB / 15.55 GiB (39%)
+Disk (/): 210.30 GiB / 271.53 GiB (77%) - ext4
 Disk (/media/public/500gb-games-ext4): 261.49 GiB / 445.68 GiB (59%) - ext4
-Disk (/media/public/500gb-games-ntfs): 262.04 GiB / 500.00 GiB (52%) - ntfs3
+Disk (/media/public/500gb-games-ntfs): 248.23 GiB / 500.00 GiB (50%) - ntfs3
 Disk (/media/public/SSD-256): 186.15 GiB / 238.46 GiB (78%) - exfat
 Display (MSI MP223): 1920x1080 @ 100 Hz in 21" [External]
 ```
@@ -36,10 +36,10 @@ Display (MSI MP223): 1920x1080 @ 100 Hz in 21" [External]
 - Recomendación para configuraciones de video local.
 
 #### Objetivo del video/stream
-- Resolución de salida: `720p`
+- Resolución de salida: `1080p`
 - FPS: `20 FPS`
 - Audio: Sin especificar. Por defecto esta bien.
-- Contenido para: PeerTube
+- Contenido para: Kick, PeerTube, Facebook, BiliBili, Tiktok, Youtube
 
 #### Configuraciones
 - Tipo de stream: Unilateral.
