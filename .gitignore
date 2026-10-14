@@ -22,6 +22,7 @@
 # Excepciones (Al final, ignorar esto, porque es trash, ya sea del OS u otra cosa)
 desktop.ini
 stream.ini
+CrashInfo.ini
 
 # Excepciones | Mod work dirs
 .data/
