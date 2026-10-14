@@ -107,3 +107,12 @@ gta_sa_modloader_controller.exe
 modloader/**/*.txt
 
 
+# Soundize
+*.soundize
+*.bank
+
+# Compress
+*.zip
+*.7zip
+*.rar
+*.tar.gz
