@@ -4,18 +4,23 @@ El mod es [ryglizzy, GTA-San-Anskateas](https://github.com/ryglizzy/GTA-San-AnSk
 ---
 
 ## Dependencias
-Primeramente descargamos el release. (Podríamos usar ell script de instalación, pero por motivos de control se puede hacer de manera manual).
+Primeramente descargamos el release. (Podríamos usar el script de instalación, pero por motivos de control se puede hacer de manera manual).
 
 ### Decompilar Skate 3
-Necesitas un `Skate3.iso` de XBox original. Decompilas con la herramienta [Github XboxDev extract-xiso](https://github.com/XboxDev/extract-xiso).
+Necesitas un `Skate 3.iso` original para XBox 360. Extraes con la herramienta [Github XboxDev extract-xiso](https://github.com/XboxDev/extract-xiso).
+
+Ejemplo:
+```bash
+extract-xiso -x "Skate 3.iso"
+```
 
 ### Mods necesarios para gta sa
-- Essentials pack MixMods, o simplemente solo; CLEO 5, Ultimate Asi Loader, Modloader.
+- Essentials pack MixMods, o simplemente solo; Ultimate Asi Loader, y Modloader.
 
 ### [DXVK](https://github.com/doitsujin/DXVK) (opcional)
 Se arreglan bugs específicos por el uso del mod.
 
-### `skate-fill.dll`
+### `skate_fill.dll`
 Este archivo esta en el release.
 
 ---
@@ -33,7 +38,7 @@ AssetsDir=SanAnskateas\skate-data\assets
 ```
 
 #### Assets y dll necesaria
-En la misma carpeta, creamos la subcarpeta: `SanAnskateas`. Y pegamos el recompilado de `Skate 3`, deben estar las carpetas asi: `skate-data\assets`. Esto es lo necesario, pero puedes pegar todo lo del recompilado.
+En la misma carpeta, creamos la subcarpeta: `SanAnskateas`. Y pegamos la iso extraída de `Skate 3`, deben estar las carpetas asi: `skate-data\assets`. Esto es lo necesario, pero si hay mas files puedes pegar todo lo del extraído.
 
 En la subcarpeta, pegamos la `skate-fill.dll`, y el texto: `version.txt`.
 
