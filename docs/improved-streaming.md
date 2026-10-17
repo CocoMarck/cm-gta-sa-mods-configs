@@ -1,4 +1,4 @@
-# Improved streaming
+# GTA SA Improved streaming
 Esta bueno, pero su limitante es el juego. El juego tiene limite de uso de ram, porque es de 32 bits.
 
 ### Solo usar 1024 mb de ram
